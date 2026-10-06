@@ -20,7 +20,7 @@ function Login() {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // Check fields
+  
     if (!cleanEmail || !password) {
       setError("Please enter your email and password.");
       return;
@@ -28,7 +28,7 @@ function Login() {
 
     setLoading(true);
 
-    // Demo account
+
     const correctEmail = "kj5057409@gmail.com";
     const correctPassword = "Lillykevin182$";
 
@@ -36,10 +36,7 @@ function Login() {
       cleanEmail === correctEmail &&
       password === correctPassword
     ) {
-      // AuthContext will save:
-      // username
-      // email
-      // login date/time
+      
       login(
         "LilyKevin182",
         "kj5057409@gmail.com"
@@ -47,7 +44,7 @@ function Login() {
 
       setLoading(false);
 
-      // Go to dashboard/home
+    
       navigate("/", { replace: true });
 
       return;
@@ -61,7 +58,7 @@ function Login() {
     <main className="flex min-h-screen items-center justify-center bg-[#0b0e11] px-4 py-8 text-white">
       <div className="w-full max-w-md">
 
-        {/* LOGO */}
+    
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-[#f0b90b]">
             Binance
@@ -72,7 +69,7 @@ function Login() {
           </p>
         </div>
 
-        {/* LOGIN CARD */}
+      
         <div className="rounded-2xl border border-[#2b3139] bg-[#181a20] p-6 shadow-2xl sm:p-8">
 
           <form
@@ -80,7 +77,7 @@ function Login() {
             className="space-y-5"
           >
 
-            {/* EMAIL */}
+            
             <div>
               <label className="mb-2 block text-sm font-medium text-[#b7bdc6]">
                 Email
@@ -106,7 +103,7 @@ function Login() {
               </div>
             </div>
 
-            {/* PASSWORD */}
+  
             <div>
               <label className="mb-2 block text-sm font-medium text-[#b7bdc6]">
                 Password
@@ -135,7 +132,7 @@ function Login() {
                   className="w-full rounded-lg border border-[#2b3139] bg-[#0b0e11] py-3 pl-11 pr-12 text-white outline-none transition placeholder:text-[#5e6673] focus:border-[#f0b90b]"
                 />
 
-                {/* SHOW / HIDE PASSWORD */}
+              
                 <button
                   type="button"
                   onClick={() =>
@@ -160,7 +157,7 @@ function Login() {
               </div>
             </div>
 
-            {/* ERROR */}
+          
             {error && (
               <div className="rounded-lg border border-[#f6465d]/30 bg-[#f6465d]/10 px-4 py-3">
                 <p className="text-sm text-[#f6465d]">
@@ -181,31 +178,12 @@ function Login() {
             </button>
           </form>
 
-          {/* DEMO LOGIN */}
-          <div className="mt-6 rounded-lg border border-[#2b3139] bg-[#0b0e11] p-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#848e9c]">
-              Demo account
-            </p>
-
-            <div className="space-y-1 text-sm">
-              <p className="text-[#b7bdc6]">
-                Email:
-                <span className="ml-2 text-white">
-                  kj5057409@gmail.com
-                </span>
-              </p>
-
-              <p className="text-[#b7bdc6]">
-                Password:
-                <span className="ml-2 text-white">
-                  Lillykevin182$
-                </span>
-              </p>
-            </div>
-          </div>
-
         </div>
-      </div>
+            </div>
+          
+
+    
+      
     </main>
   );
 }
