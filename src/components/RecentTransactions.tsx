@@ -23,7 +23,21 @@ function RecentTransactions({
   transactions,
 }: RecentTransactionsProps) {
   const demoTransactions: Transaction[] = [
+    
+    
     {
+      id: "sol-1",
+      type: "Buy",
+      coin: "SOL",
+      amount: "420.00 SOL",
+      price: "$215.68",
+      total: "$140,585.60",
+      date: "oct 6, 2026 •  1:36 AM",
+      status: "Completed",
+      source: "Binance Spot",
+    },
+      {
+     
       id: "bank-1",
       type: "Buy",
       coin: "USD",
@@ -34,6 +48,7 @@ function RecentTransactions({
       status: "Completed",
       source: "Bank of America",
     },
+
      {
       id: "sol-1",
       type: "Buy",
