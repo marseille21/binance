@@ -1,7 +1,5 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
 import {
   Search,
   Menu,
@@ -27,27 +25,45 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const navigate = useNavigate();
+
   const { user, logout } = useAuth();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] =
+    useState(false);
 
   const handleLogout = () => {
     logout();
+
     setProfileOpen(false);
-    navigate("/");
+    setNotificationsOpen(false);
+    setMobileOpen(false);
+
+    navigate("/", { replace: true });
   };
+
+  // Format login date and time
+  const formattedLoginDate = user?.loginDate
+    ? new Date(user.loginDate).toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    : "No login recorded";
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#2b2f36] bg-[#0b0e11] text-white">
-
-      
+      {/* MAIN NAVBAR */}
       <div className="flex h-16 items-center justify-between px-4 lg:px-6">
 
-       
+        {/* LEFT */}
         <div className="flex items-center gap-4 lg:gap-6">
- 
+
+          {/* MOBILE MENU */}
           <button
             type="button"
             onClick={() => {
@@ -57,10 +73,14 @@ export default function Navbar() {
             }}
             className="rounded-md p-2 transition hover:bg-[#181a20] lg:hidden"
           >
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileOpen ? (
+              <X size={22} />
+            ) : (
+              <Menu size={22} />
+            )}
           </button>
 
-      
+          {/* LOGO */}
           <Link
             to="/"
             onClick={() => setMobileOpen(false)}
@@ -69,7 +89,7 @@ export default function Navbar() {
             Binance
           </Link>
 
-         
+          {/* DESKTOP NAV */}
           <nav className="hidden items-center gap-5 lg:flex">
             {NAV_LINKS.map((link) => (
               <Link
@@ -82,10 +102,11 @@ export default function Navbar() {
             ))}
           </nav>
         </div>
- 
+
+        {/* RIGHT */}
         <div className="flex items-center gap-1 sm:gap-2">
 
-        
+          {/* SEARCH */}
           <button
             type="button"
             className="rounded-full p-2 transition hover:bg-[#181a20]"
@@ -93,20 +114,20 @@ export default function Navbar() {
             <Search size={20} />
           </button>
 
-    
+          {/* NOTIFICATIONS */}
           <div className="relative">
-
             <button
               type="button"
               onClick={() => {
-                setNotificationsOpen(!notificationsOpen);
+                setNotificationsOpen(
+                  !notificationsOpen
+                );
                 setProfileOpen(false);
               }}
               className="relative rounded-full p-2 transition hover:bg-[#181a20]"
             >
               <Bell size={20} />
 
-    
               <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-[#f6465d]" />
             </button>
 
@@ -125,7 +146,6 @@ export default function Navbar() {
 
                 <div className="p-3">
                   <div className="rounded-lg bg-[#0b0e11] p-3">
-
                     <p className="text-sm font-medium">
                       Welcome to Binance
                     </p>
@@ -137,17 +157,14 @@ export default function Navbar() {
                     <p className="mt-2 text-[11px] text-gray-500">
                       Just now
                     </p>
-
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-        
+          {/* PROFILE */}
           <div className="relative">
-
-      
             <button
               type="button"
               onClick={() => {
@@ -156,19 +173,18 @@ export default function Navbar() {
               }}
               className="flex items-center gap-2 rounded-full p-1 transition hover:bg-[#181a20]"
             >
-
-
+              {/* PROFILE IMAGE */}
               <div className="h-9 w-9 overflow-hidden rounded-full border-2 border-[#f0b90b] bg-[#2b2f36]">
-
                 <img
-                  src={user?.profileImage || profileImage}
+                  src={
+                    user?.profileImage ||
+                    profileImage
+                  }
                   alt="Profile"
                   className="h-full w-full object-cover"
                 />
-
               </div>
 
-            
               <ChevronDown
                 size={16}
                 className={`hidden transition-transform sm:block ${
@@ -177,46 +193,59 @@ export default function Navbar() {
               />
             </button>
 
-            
+            {/* PROFILE DROPDOWN */}
             {profileOpen && (
-              <div className="absolute right-0 top-12 w-64 overflow-hidden rounded-xl border border-[#2b2f36] bg-[#181a20] shadow-2xl">
+              <div className="absolute right-0 top-12 w-[300px] overflow-hidden rounded-xl border border-[#2b2f36] bg-[#181a20] shadow-2xl">
 
-            
+                {/* USER INFORMATION */}
                 <div className="border-b border-[#2b2f36] p-4">
 
                   <div className="flex items-center gap-3">
 
-          
-                    <div className="h-12 w-12 overflow-hidden rounded-full border-2 border-[#f0b90b] bg-[#2b2f36]">
-
+                    {/* BIG PROFILE IMAGE */}
+                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-[#f0b90b] bg-[#2b2f36]">
                       <img
-                        src={user?.profileImage || profileImage}
+                        src={
+                          user?.profileImage ||
+                          profileImage
+                        }
                         alt="Profile"
                         className="h-full w-full object-cover"
                       />
-
                     </div>
 
-      
+                    {/* USERNAME + EMAIL */}
                     <div className="min-w-0">
-
                       <p className="truncate font-semibold">
-                        {user?.username || "LilyKevin182"}
+                        {user?.username ||
+                          "LilyKevin182"}
                       </p>
 
                       <p className="truncate text-xs text-gray-400">
-                        {user?.email || "kj5057409@gmail.com"}
+                        {user?.email ||
+                          "kj5057409@gmail.com"}
                       </p>
-
                     </div>
+                  </div>
+
+                  {/* LAST LOGIN */}
+                  <div className="mt-4 rounded-lg border border-[#2b2f36] bg-[#0b0e11] p-3">
+
+                    <p className="text-xs font-medium text-[#848e9c]">
+                      Last login
+                    </p>
+
+                    <p className="mt-1 text-sm font-medium text-white">
+                      {formattedLoginDate}
+                    </p>
 
                   </div>
                 </div>
 
-            
+                {/* MENU */}
                 <div className="p-2">
 
-    
+                  {/* PROFILE */}
                   <button
                     type="button"
                     onClick={() => {
@@ -229,7 +258,7 @@ export default function Navbar() {
                     Profile
                   </button>
 
-                
+                  {/* WALLET */}
                   <button
                     type="button"
                     onClick={() => {
@@ -242,7 +271,7 @@ export default function Navbar() {
                     Wallet
                   </button>
 
-      
+                  {/* SETTINGS */}
                   <button
                     type="button"
                     onClick={() => {
@@ -255,10 +284,9 @@ export default function Navbar() {
                     Settings
                   </button>
 
-          
                   <div className="my-2 border-t border-[#2b2f36]" />
 
-            
+                  {/* LOGOUT */}
                   <button
                     type="button"
                     onClick={handleLogout}
@@ -267,7 +295,6 @@ export default function Navbar() {
                     <LogOut size={18} />
                     Log out
                   </button>
-
                 </div>
               </div>
             )}
@@ -275,11 +302,10 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* MOBILE MENU */}
       {mobileOpen && (
         <div className="border-t border-[#2b2f36] bg-[#0b0e11] lg:hidden">
-
           <nav className="flex flex-col p-3">
-
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.label}
@@ -290,12 +316,9 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-
           </nav>
         </div>
       )}
-
     </header>
   );
 }
- 

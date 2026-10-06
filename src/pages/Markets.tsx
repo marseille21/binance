@@ -236,8 +236,6 @@ function Markets() {
 
   return (
     <main className="min-h-screen bg-[#0b0e11] px-4 py-6 text-white sm:px-6 lg:px-10 lg:py-8">
-
-      {/* HEADER */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold sm:text-4xl">
           Markets
@@ -272,24 +270,22 @@ function Markets() {
             </p>
           </div>
 
-          <div className="rounded-lg border border-[#2b3139] bg-[#0b0e11] px-5 py-4">
-            <p className="text-xs text-[#848e9c]">
-              Account
+          <div>
+            <p className="text-sm text-[#848e9c]">
+              Account Type
             </p>
 
             <p className="mt-1 font-semibold">
-              Demo Trading Account
+              Trading Account
             </p>
 
-            <p className="mt-1 text-xs text-[#f0b90b]">
-              Frontend Demo
-            </p>
+          
           </div>
 
         </div>
       </div>
 
-      {/* MARKET SUMMARY */}
+      
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
 
@@ -372,11 +368,11 @@ function Markets() {
         </div>
 
         <span className="text-xs text-[#f0b90b]">
-          DEMO MARKET DATA
+           MARKET DATA
         </span>
       </div>
 
-      {/* SEARCH */}
+      
       <div className="mb-6 flex w-full max-w-md items-center gap-3 rounded-lg border border-[#2b3139] bg-[#181a20] px-4 py-3">
 
         <Search
@@ -404,7 +400,7 @@ function Markets() {
         )}
       </div>
 
-      {/* SECTIONS */}
+  
       <div className="mb-6 overflow-x-auto border-b border-[#2b3139]">
 
         <div className="flex min-w-max gap-6">
@@ -619,7 +615,7 @@ function Markets() {
   
       <div className="hidden overflow-x-auto rounded-xl border border-[#2b3139] md:block">
 
-        <table className="w-full min-w-[1100px]">
+        <table className="w-full min-w-\[1100px\]">
 
           <thead className="bg-[#181a20]">
 
@@ -714,7 +710,7 @@ function Markets() {
                     className="cursor-pointer border-t border-[#2b3139] transition hover:bg-[#181a20]"
                   >
 
-                    {/* PAIR */}
+                  
                     <td className="px-6 py-5">
 
                       <div className="flex items-center gap-3">

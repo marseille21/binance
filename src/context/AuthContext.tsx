@@ -1,4 +1,3 @@
-
 import {
   createContext,
   useContext,
@@ -11,6 +10,7 @@ export interface User {
   username: string;
   email: string;
   profileImage: string | null;
+  loginDate: string | null;
 }
 
 interface AuthContextType {
@@ -53,14 +53,22 @@ export function AuthProvider({
       }
 
       try {
-        return JSON.parse(savedProfile);
+        const parsedProfile = JSON.parse(savedProfile);
+
+        return {
+          username: parsedProfile.username ?? "",
+          email: parsedProfile.email ?? "",
+          profileImage:
+            parsedProfile.profileImage ?? null,
+          loginDate:
+            parsedProfile.loginDate ?? null,
+        };
       } catch {
         localStorage.removeItem(PROFILE_KEY);
         return null;
       }
     });
 
-  
   const [isLoggedIn, setIsLoggedIn] =
     useState<boolean>(() => {
       return (
@@ -69,13 +77,12 @@ export function AuthProvider({
       );
     });
 
-   
   const user =
     isLoggedIn && profile
       ? profile
       : null;
 
-  
+  // Save profile whenever it changes
   useEffect(() => {
     if (profile) {
       localStorage.setItem(
@@ -85,7 +92,7 @@ export function AuthProvider({
     }
   }, [profile]);
 
-  
+  // Save login status
   useEffect(() => {
     localStorage.setItem(
       LOGIN_KEY,
@@ -93,30 +100,35 @@ export function AuthProvider({
     );
   }, [isLoggedIn]);
 
-  
+  // LOGIN
   const login = (
     username: string,
     email: string
   ) => {
+    const currentLoginDate =
+      new Date().toISOString();
+
     setProfile((currentProfile) => ({
       username,
       email,
 
-      
       profileImage:
-        currentProfile?.profileImage ??
-        null,
+        currentProfile?.profileImage ?? null,
+
+      // Save date + time of login
+      loginDate: currentLoginDate,
     }));
 
     setIsLoggedIn(true);
   };
 
-  
+  // LOGOUT
   const logout = () => {
     setProfile(null);
     setIsLoggedIn(false);
   };
- 
+
+  // UPDATE PROFILE IMAGE
   const updateProfileImage = (
     image: string
   ) => {
@@ -145,7 +157,7 @@ export function AuthProvider({
     </AuthContext.Provider>
   );
 }
- 
+
 export function useAuth() {
   const context =
     useContext(AuthContext);
@@ -158,7 +170,3 @@ export function useAuth() {
 
   return context;
 }
-
-
-
- 

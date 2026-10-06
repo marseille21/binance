@@ -170,9 +170,7 @@ function Buy() {
 
             <div className="mb-3 flex items-center gap-2">
 
-              <span className="rounded bg-[#f0b90b] px-2 py-1 text-[10px] font-bold text-black">
-                DEMO
-              </span>
+             
 
               <span className="text-xs text-[#848e9c]">
                 Buy Crypto
@@ -191,7 +189,7 @@ function Buy() {
 
           </div>
 
-          {/* BALANCE */}
+      
 
           <div className="rounded-xl border border-[#2b3139] bg-[#181a20] px-5 py-4">
 
@@ -220,7 +218,7 @@ function Buy() {
 
         </div>
 
-        {/* SUCCESS */}
+  
 
         {success && (
           <div className="mb-6 flex items-center gap-3 rounded-xl border border-[#0ecb81]/30 bg-[#0ecb81]/10 p-4">
@@ -237,7 +235,7 @@ function Buy() {
               </p>
 
               <p className="text-sm text-[#848e9c]">
-                Your demo wallet has been
+                Your wallet has been
                 updated successfully.
               </p>
 
@@ -291,7 +289,7 @@ function Buy() {
 
                 <p className="mt-2 text-xs leading-5 text-[#848e9c]">
                   Review and execute your
-                  demo order quickly.
+                 order quickly.
                 </p>
 
               </div>
@@ -327,7 +325,7 @@ function Buy() {
 
                 <p className="mt-2 text-xs leading-5 text-[#848e9c]">
                   Purchases update your
-                  demo wallet balance.
+                   wallet balance.
                 </p>
 
               </div>
@@ -584,7 +582,7 @@ function Buy() {
 
               </div>
 
-              {/* ORDER DETAILS */}
+            
 
               <div className="mb-6 space-y-4 border-t border-[#2b3139] pt-5 text-sm">
 
@@ -673,8 +671,8 @@ function Buy() {
               </button>
 
               <p className="mt-4 text-center text-xs leading-5 text-[#848e9c]">
-                This is a frontend demo.
-                No real cryptocurrency is
+              
+                 Real cryptocurrency is
                 purchased or transferred.
               </p>
 
@@ -790,7 +788,7 @@ function Buy() {
             </div>
 
             <div className="mt-5 rounded-lg border border-[#f0b90b]/20 bg-[#f0b90b]/5 p-3 text-xs leading-5 text-[#848e9c]">
-              Demo transaction only. No
+             Transaction only. No
               blockchain transaction will be
               created.
             </div>

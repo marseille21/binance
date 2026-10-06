@@ -179,9 +179,7 @@ export function WalletProvider({
       0
     );
 
-  /*
-    Earn rewards
-  */
+  
   const earnRewardValue =
     earnPositions.reduce(
       (total, position) =>

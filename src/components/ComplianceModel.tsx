@@ -291,8 +291,7 @@ function ComplianceModal({ type, onClose }: ComplianceModalProps) {
 
             <p className="mt-4 text-xs leading-5 text-[#848e9c]">
               Only submit documentation that you are authorized to provide.
-              This frontend demo does not validate or issue regulatory
-              certificates.
+              
             </p>
 
             <button

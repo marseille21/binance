@@ -1,10 +1,16 @@
- import { useMemo, useState } from "react";
+
+import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   ArrowDown,
   ArrowUp,
   ChevronDown,
   Star,
+  ShieldCheck,
+  Upload,
+  X,
+  CheckCircle2,
+  Clock3,
 } from "lucide-react";
 
 import PriceChart from "../components/PriceChart";
@@ -24,6 +30,11 @@ export type Transaction = {
 
 type OrderSide = "Buy" | "Sell";
 type OrderType = "Limit" | "Market";
+
+type VerificationStatus =
+  | "Not Verified"
+  | "Pending"
+  | "Verified";
 
 interface MarketInfo {
   base: string;
@@ -77,13 +88,6 @@ const MARKET_DATA: Record<string, MarketInfo> = {
   },
 };
 
-const COIN_NAMES: Record<string, string> = {
-  BTC: "Bitcoin",
-  ETH: "Ethereum",
-  BNB: "BNB",
-  SOL: "Solana",
-};
-
 function Trade() {
   const { symbol } = useParams();
 
@@ -92,8 +96,7 @@ function Trade() {
   const market =
     MARKET_DATA[pair] ?? MARKET_DATA.BTCUSDT;
 
-  const [side, setSide] =
-    useState<OrderSide>("Buy");
+  const [side, setSide] = useState<OrderSide>("Buy");
 
   const [orderType, setOrderType] =
     useState<OrderType>("Limit");
@@ -102,26 +105,38 @@ function Trade() {
     market.price.toString()
   );
 
-  const [amount, setAmount] =
-    useState("");
+  const [amount, setAmount] = useState("");
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
   const [transactions, setTransactions] =
     useState<Transaction[]>([]);
 
+  // Verification state
+  const [showVerificationModal, setShowVerificationModal] =
+    useState(false);
+
+  const [verificationStatus, setVerificationStatus] =
+    useState<VerificationStatus>("Not Verified");
+
+  const [documentType, setDocumentType] =
+    useState("Government ID");
+
+  const [documentFile, setDocumentFile] =
+    useState<File | null>(null);
+
+  const [verificationMessage, setVerificationMessage] =
+    useState("");
+
  
   const availableUSDT = 90000;
+
   const availableCoin = 8.5;
 
- 
+  
   const orderTotal = useMemo(() => {
-    const numericPrice =
-      Number(price);
-
-    const numericAmount =
-      Number(amount);
+    const numericPrice = Number(price);
+    const numericAmount = Number(amount);
 
     if (
       !Number.isFinite(numericPrice) ||
@@ -130,41 +145,56 @@ function Trade() {
       return 0;
     }
 
-    return (
-      numericPrice *
-      numericAmount
-    );
+    return numericPrice * numericAmount;
   }, [price, amount]);
- 
-  const formattedTotal =
-    orderTotal.toLocaleString(
-      "en-US",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }
-    );
 
-  
+  const formattedTotal = orderTotal.toLocaleString(
+    "en-US",
+    {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }
+  );
+
+   
   const currentOrderPrice =
     orderType === "Market"
       ? market.price
       : Number(price);
 
    
+  const handleVerificationSubmit = () => {
+    if (!documentFile) {
+      setVerificationMessage(
+        "Please upload a verification document."
+      );
+
+      return;
+    }
+
+    setVerificationStatus("Pending");
+
+    setShowVerificationModal(false);
+
+    setVerificationMessage("");
+
+    setError("");
+ 
+    alert(
+      "Verification submitted successfully. Your documents are now under review."
+    );
+  };
+ 
   const handleOrder = () => {
     setError("");
 
-    const numericAmount =
-      Number(amount);
+    const numericAmount = Number(amount);
 
-    const numericPrice =
-      currentOrderPrice;
- 
+    const numericPrice = currentOrderPrice;
+
+    
     if (
-      !Number.isFinite(
-        numericAmount
-      ) ||
+      !Number.isFinite(numericAmount) ||
       numericAmount <= 0
     ) {
       setError(
@@ -173,93 +203,131 @@ function Trade() {
 
       return;
     }
+
  
     if (
-      !Number.isFinite(
-        numericPrice
-      ) ||
+      !Number.isFinite(numericPrice) ||
       numericPrice <= 0
     ) {
-      setError(
-        "Enter a valid price."
-      );
+      setError("Enter a valid price.");
 
       return;
     }
 
     const total =
-      numericAmount *
-      numericPrice;
+      numericAmount * numericPrice;
+ 
+    if (side === "Buy") {
+      if (total > availableUSDT) {
+        setError(
+          "Insufficient USDT balance."
+        );
 
-    
-    if (
-      side === "Buy" &&
-      total > availableUSDT
-    ) {
-      setError(
-        "Insufficient USDT balance."
-      );
+        return;
+      }
 
-      return;
-    }
+      const newTransaction: Transaction = {
+        id: Date.now(),
 
-   
-    if (
-      side === "Sell" &&
-      numericAmount >
-        availableCoin
-    ) {
-      setError(
-        `Insufficient ${market.base} balance.`
-      );
+        type: "Buy",
 
-      return;
-    }
+        coin: market.base,
 
-  
-    const newTransaction: Transaction = {
-      id: Date.now(),
+        amount: `${numericAmount.toFixed(
+          8
+        )} ${market.base}`,
 
-      type: side,
+        price: `${numericPrice.toLocaleString(
+          "en-US",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )} ${market.quote}`,
 
-      coin: market.base,
+        total: `${total.toLocaleString(
+          "en-US",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )} ${market.quote}`,
 
-      amount: `${numericAmount.toFixed(
-        8
-      )} ${market.base}`,
+        date: new Date().toLocaleString(),
 
-      price: `${numericPrice.toLocaleString(
-        "en-US",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }
-      )} ${market.quote}`,
+        status: "Completed",
 
-      total: `${total.toLocaleString(
-        "en-US",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }
-      )} ${market.quote}`,
+        source: "Spot Trading",
+      };
 
-      date: new Date().toLocaleString(),
-
-      status: "Completed",
-
-      source: "Spot Trading",
-    };
-
-   
-    setTransactions(
-      (previous) => [
+      setTransactions((previous) => [
         newTransaction,
         ...previous,
-      ]
-    );
+      ]);
+
+      setAmount("");
+
+      return;
+    }
  
-    setAmount("");
+    if (side === "Sell") {
+      if (verificationStatus !== "Verified") {
+        setShowVerificationModal(true);
+
+        return;
+      }
+
+       
+      if (numericAmount > availableCoin) {
+        setError(
+          `Insufficient ${market.base} balance. Available: ${availableCoin} ${market.base}`
+        );
+
+        return;
+      }
+
+      
+      const newTransaction: Transaction = {
+        id: Date.now(),
+
+        type: "Sell",
+
+        coin: market.base,
+
+        amount: `${numericAmount.toFixed(
+          8
+        )} ${market.base}`,
+
+        price: `${numericPrice.toLocaleString(
+          "en-US",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )} ${market.quote}`,
+
+        total: `${total.toLocaleString(
+          "en-US",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        )} ${market.quote}`,
+
+        date: new Date().toLocaleString(),
+
+        status: "Completed",
+
+        source: "Spot Trading",
+      };
+
+      setTransactions((previous) => [
+        newTransaction,
+        ...previous,
+      ]);
+
+      setAmount("");
+    }
   };
 
   return (
@@ -267,11 +335,8 @@ function Trade() {
  
 
       <section className="border-b border-[#2b3139] bg-[#0b0e11]">
-
         <div className="flex flex-wrap items-center gap-5 px-4 py-4 md:px-6">
-
-      
-
+ 
           <div className="flex items-center gap-3">
 
             <button
@@ -282,7 +347,6 @@ function Trade() {
             </button>
 
             <div>
-
               <div className="flex items-center gap-2">
 
                 <h1 className="text-lg font-bold md:text-xl">
@@ -299,16 +363,14 @@ function Trade() {
               <p className="text-xs text-[#848e9c]">
                 Spot Trading
               </p>
-
             </div>
 
           </div>
- 
 
+        
           <div>
 
             <p className="text-lg font-semibold md:text-xl">
-
               {market.price.toLocaleString(
                 "en-US",
                 {
@@ -316,7 +378,6 @@ function Trade() {
                   maximumFractionDigits: 2,
                 }
               )}
-
             </p>
 
             <p className="text-xs text-[#848e9c]">
@@ -325,9 +386,7 @@ function Trade() {
             </p>
 
           </div>
-
-          
-
+ 
           <div>
 
             <p
@@ -337,9 +396,7 @@ function Trade() {
                   : "text-sm text-[#f6465d]"
               }
             >
-              {market.change >= 0
-                ? "+"
-                : ""}
+              {market.change >= 0 ? "+" : ""}
               {market.change.toFixed(2)}%
             </p>
 
@@ -348,9 +405,7 @@ function Trade() {
             </p>
 
           </div>
-
-       
-
+ 
           <div className="hidden sm:block">
 
             <p className="text-sm font-medium">
@@ -362,9 +417,7 @@ function Trade() {
             </p>
 
           </div>
-
-          {/* LOW */}
-
+ 
           <div className="hidden md:block">
 
             <p className="text-sm font-medium">
@@ -377,8 +430,7 @@ function Trade() {
 
           </div>
 
-          {/* VOLUME */}
-
+        
           <div className="hidden lg:block">
 
             <p className="text-sm font-medium">
@@ -392,21 +444,16 @@ function Trade() {
           </div>
 
         </div>
-
       </section>
-
  
 
-      <section className="grid min-h-[650px] lg:grid-cols-[minmax(0,1fr)_340px]">
- 
+      <section className="grid min-h-\[650px\] lg:grid-cols-[minmax(0,1fr)_340px]">
 
+      
         <div className="min-w-0 border-r border-[#2b3139]">
 
-        
-
+    
           <div className="border-b border-[#2b3139] bg-[#181a20]">
-
-       
 
             <div className="flex items-center gap-5 overflow-x-auto border-b border-[#2b3139] px-4 py-3 text-xs text-[#848e9c]">
 
@@ -469,20 +516,17 @@ function Trade() {
               </button>
 
             </div>
- 
 
             <div className="p-3">
-
               <PriceChart />
-
             </div>
 
           </div>
- 
+
+          
           <div className="bg-[#181a20]">
 
-            
-
+      
             <div className="flex border-b border-[#2b3139]">
 
               <button
@@ -518,15 +562,14 @@ function Trade() {
             </div>
 
             <div className="p-4 md:p-5">
- 
+
+        
               <div className="mb-5 flex items-center gap-6 text-sm">
 
                 <button
                   type="button"
                   onClick={() =>
-                    setOrderType(
-                      "Limit"
-                    )
+                    setOrderType("Limit")
                   }
                   className={
                     orderType === "Limit"
@@ -540,9 +583,7 @@ function Trade() {
                 <button
                   type="button"
                   onClick={() =>
-                    setOrderType(
-                      "Market"
-                    )
+                    setOrderType("Market")
                   }
                   className={
                     orderType === "Market"
@@ -554,28 +595,65 @@ function Trade() {
                 </button>
 
               </div>
- 
 
-              <div className="mb-4 flex items-center justify-between text-xs">
+        
+              <div className="mb-5 flex items-center justify-between text-xs">
 
                 <span className="text-[#848e9c]">
                   Available
                 </span>
 
                 <span>
-
                   {side === "Buy"
                     ? `${availableUSDT.toLocaleString()} USDT`
                     : `${availableCoin.toFixed(
                         8
                       )} ${market.base}`}
-
                 </span>
 
               </div>
 
-             
+          
+              {side === "Sell" &&
+                verificationStatus !==
+                  "Verified" && (
+                  <div className="mb-4 rounded-lg border border-[#f0b90b]/30 bg-[#f0b90b]/10 p-3">
 
+                    <div className="flex items-center gap-2">
+
+                      {verificationStatus ===
+                      "Pending" ? (
+                        <Clock3
+                          size={16}
+                          className="text-[#f0b90b]"
+                        />
+                      ) : (
+                        <ShieldCheck
+                          size={16}
+                          className="text-[#f0b90b]"
+                        />
+                      )}
+
+                      <span className="text-xs font-medium text-[#f0b90b]">
+                        {verificationStatus ===
+                        "Pending"
+                          ? "Verification under review"
+                          : "Verification required to sell"}
+                      </span>
+
+                    </div>
+
+                    <p className="mt-1 text-[11px] leading-4 text-[#848e9c]">
+                      {verificationStatus ===
+                      "Pending"
+                        ? "Selling remains restricted while your documents are being reviewed."
+                        : "Complete identity verification before selling crypto from this account."}
+                    </p>
+
+                  </div>
+                )}
+
+      
               {orderType === "Limit" && (
                 <div className="mb-3">
 
@@ -605,8 +683,8 @@ function Trade() {
 
                 </div>
               )}
- 
 
+      
               {orderType === "Market" && (
                 <div className="mb-3">
 
@@ -629,8 +707,7 @@ function Trade() {
                 </div>
               )}
 
-   
-
+    
               <div className="mb-3">
 
                 <label className="mb-2 block text-xs text-[#848e9c]">
@@ -662,8 +739,7 @@ function Trade() {
 
               </div>
 
-              {/* TOTAL */}
-
+    
               <div className="mb-4">
 
                 <label className="mb-2 block text-xs text-[#848e9c]">
@@ -686,15 +762,14 @@ function Trade() {
 
               </div>
 
-              {/* ERROR */}
-
+      
               {error && (
                 <div className="mb-4 rounded-lg border border-[#f6465d]/30 bg-[#f6465d]/10 px-3 py-3 text-xs text-[#f6465d]">
                   {error}
                 </div>
               )}
- 
 
+      
               <div className="mb-4 grid grid-cols-4 gap-2">
 
                 {[25, 50, 75, 100].map(
@@ -737,7 +812,6 @@ function Trade() {
               </div>
 
               {/* SUBMIT */}
-
               <button
                 type="button"
                 onClick={handleOrder}
@@ -754,9 +828,7 @@ function Trade() {
               </button>
 
             </div>
-
           </div>
-
         </div>
  
 
@@ -780,36 +852,15 @@ function Trade() {
 
           <div className="p-4">
 
-            {/* SELL ORDERS */}
-
+        
             <div className="space-y-2">
 
               {[
-                [
-                  "109,300.50",
-                  "0.842",
-                  "92,030",
-                ],
-                [
-                  "109,280.20",
-                  "1.254",
-                  "137,035",
-                ],
-                [
-                  "109,270.10",
-                  "0.653",
-                  "71,364",
-                ],
-                [
-                  "109,260.80",
-                  "2.105",
-                  "229,990",
-                ],
-                [
-                  "109,255.30",
-                  "0.421",
-                  "45,996",
-                ],
+                ["109,300.50", "0.842", "92,030"],
+                ["109,280.20", "1.254", "137,035"],
+                ["109,270.10", "0.653", "71,364"],
+                ["109,260.80", "2.105", "229,990"],
+                ["109,255.30", "0.421", "45,996"],
               ].map(
                 ([
                   priceValue,
@@ -837,8 +888,7 @@ function Trade() {
 
             </div>
 
-      
-
+    
             <div className="my-5 border-y border-[#2b3139] py-4">
 
               <div className="flex items-center justify-between">
@@ -863,36 +913,16 @@ function Trade() {
               </div>
 
             </div>
- 
 
+  
             <div className="space-y-2">
 
               {[
-                [
-                  "109,245.10",
-                  "1.024",
-                  "111,868",
-                ],
-                [
-                  "109,230.60",
-                  "2.314",
-                  "252,569",
-                ],
-                [
-                  "109,215.20",
-                  "0.875",
-                  "95,563",
-                ],
-                [
-                  "109,200.40",
-                  "1.632",
-                  "178,015",
-                ],
-                [
-                  "109,185.90",
-                  "0.542",
-                  "59,178",
-                ],
+                ["109,245.10", "1.024", "111,868"],
+                ["109,230.60", "2.314", "252,569"],
+                ["109,215.20", "0.875", "95,563"],
+                ["109,200.40", "1.632", "178,015"],
+                ["109,185.90", "0.542", "59,178"],
               ].map(
                 ([
                   priceValue,
@@ -920,8 +950,7 @@ function Trade() {
 
             </div>
 
-        
-
+    
             <div className="mt-6 rounded-lg border border-[#2b3139] bg-[#0f1115] p-4">
 
               <div className="flex items-center gap-2">
@@ -943,25 +972,290 @@ function Trade() {
 
               <p className="mt-1 text-xs leading-5 text-[#848e9c]">
                 Order-book figures shown here
-                are simulated frontend data.
+                are  data.
               </p>
 
             </div>
 
           </div>
-
         </aside>
 
       </section>
-
-    
+ 
 
       <TransactionHistory
         transactions={transactions}
       />
+ 
+
+      {showVerificationModal && (
+        <div className="fixed inset-0 z-\[100\] flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+
+          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-[#2b3139] bg-[#181a20] shadow-2xl">
+
+          
+            <div className="flex items-start justify-between border-b border-[#2b3139] p-5">
+
+              <div className="flex items-start gap-3">
+
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f0b90b]/10">
+
+                  <ShieldCheck
+                    size={22}
+                    className="text-[#f0b90b]"
+                  />
+
+                </div>
+
+                <div>
+
+                  <h2 className="text-lg font-semibold">
+                    Verification Required
+                  </h2>
+
+                  <p className="mt-1 text-xs text-[#848e9c]">
+                    Identity verification is required
+                    before you can sell crypto.
+                  </p>
+
+                </div>
+
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowVerificationModal(false)
+                }
+                className="rounded-lg p-1 text-[#848e9c] transition hover:bg-[#2b3139] hover:text-white"
+              >
+                <X size={18} />
+              </button>
+
+            </div>
+
+            <div className="p-5">
+
+          
+              <div className="mb-5 rounded-xl border border-[#f0b90b]/30 bg-[#f0b90b]/10 p-4">
+
+                <div className="flex gap-3">
+
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#f0b90b]/20 text-[#f0b90b]">
+                    !
+                  </div>
+
+                  <div>
+
+                    <p className="text-sm font-semibold text-[#f0b90b]">
+                      Selling is restricted
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5 text-[#b7bdc6]">
+                      Please complete identity verification
+                      before selling {market.base}.
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+        
+              <div className="mb-5 rounded-xl border border-[#2b3139] bg-[#0f1115] p-4">
+
+                <div className="mb-3 flex items-center justify-between">
+
+                  <span className="text-xs text-[#848e9c]">
+                    Sell amount
+                  </span>
+
+                  <span className="text-sm font-semibold">
+                    {amount || "0"} {market.base}
+                  </span>
+
+                </div>
+
+                <div className="flex items-center justify-between">
+
+                  <span className="text-xs text-[#848e9c]">
+                    Estimated value
+                  </span>
+
+                  <span className="text-sm font-semibold">
+                    {formattedTotal} USDT
+                  </span>
+
+                </div>
+
+              </div>
+
+          
+              {verificationStatus ===
+                "Pending" && (
+                <div className="mb-5 rounded-xl border border-[#f0b90b]/30 bg-[#f0b90b]/10 p-4">
+
+                  <div className="flex items-center gap-2">
+
+                    <Clock3
+                      size={17}
+                      className="text-[#f0b90b]"
+                    />
+
+                    <span className="text-sm font-semibold text-[#f0b90b]">
+                      Verification under review
+                    </span>
+
+                  </div>
+
+                  <p className="mt-2 text-xs leading-5 text-[#848e9c]">
+                    Your documents have been submitted.
+                    Selling remains restricted until
+                    verification is approved.
+                  </p>
+
+                </div>
+              )}
+
+        
+              {verificationStatus !==
+                "Pending" && (
+                <>
+                  <div className="mb-4">
+
+                    <label className="mb-2 block text-xs text-[#848e9c]">
+                      Document type
+                    </label>
+
+                    <div className="relative">
+
+                      <select
+                        value={documentType}
+                        onChange={(e) =>
+                          setDocumentType(
+                            e.target.value
+                          )
+                        }
+                        className="w-full appearance-none rounded-lg border border-[#2b3139] bg-[#0f1115] px-3 py-3 text-sm text-white outline-none focus:border-[#f0b90b]"
+                      >
+                        <option>
+                          Government ID
+                        </option>
+
+                        <option>
+                          Passport
+                        </option>
+
+                        <option>
+                          Driver's License
+                        </option>
+
+                      </select>
+
+                      <ChevronDown
+                        size={16}
+                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#848e9c]"
+                      />
+
+                    </div>
+
+                  </div>
+
+      
+                  <div className="mb-4">
+
+                    <label className="mb-2 block text-xs text-[#848e9c]">
+                      Verification document
+                    </label>
+
+                    <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-[#2b3139] bg-[#0f1115] px-4 py-7 text-center transition hover:border-[#f0b90b]">
+
+                      <Upload
+                        size={24}
+                        className="mb-3 text-[#848e9c]"
+                      />
+
+                      <span className="text-sm font-medium">
+
+                        {documentFile
+                          ? documentFile.name
+                          : "Upload your document"}
+
+                      </span>
+
+                      <span className="mt-1 text-xs text-[#5e6673]">
+                        JPG, PNG or PDF
+                      </span>
+
+                      <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        className="hidden"
+                        onChange={(e) => {
+
+                          const file =
+                            e.target.files?.[0] ??
+                            null;
+
+                          setDocumentFile(file);
+
+                          setVerificationMessage(
+                            ""
+                          );
+
+                        }}
+                      />
+
+                    </label>
+
+                  </div>
+
+                
+                  {verificationMessage && (
+                    <div className="mb-4 rounded-lg border border-[#f6465d]/30 bg-[#f6465d]/10 p-3 text-xs text-[#f6465d]">
+                      {verificationMessage}
+                    </div>
+                  )}
+
+          
+                  <button
+                    type="button"
+                    onClick={
+                      handleVerificationSubmit
+                    }
+                    disabled={!documentFile}
+                    className="w-full rounded-lg bg-[#f0b90b] py-3 text-sm font-semibold text-black transition hover:bg-[#dca900] disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Submit Verification
+                  </button>
+                </>
+              )}
+
+    
+              <div className="mt-4 flex gap-2">
+
+                <CheckCircle2
+                  size={14}
+                  className="mt-0.5 shrink-0 text-[#0ecb81]"
+                />
+
+                <p className="text-[11px] leading-4 text-[#5e6673]">
+                  Your document would be securely processed
+                  by a KYC verification service in a real
+                  production application.  
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
 
     </main>
   );
 }
-
 export default Trade;

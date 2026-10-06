@@ -44,14 +44,7 @@ const PRODUCTS: Product[] = [
     coin: "SOL",
   },
 ];
-
-const COIN_PRICES: Record<Coin, number> = {
-  BTC: 109250.5,
-  ETH: 3925.75,
-  BNB: 875.4,
-  SOL: 215.68,
-  USDT: 1,
-};
+ 
 
 function Earn() {
   const {
@@ -271,7 +264,7 @@ function Earn() {
 
               <div className="overflow-x-auto">
 
-                <table className="w-full min-w-[700px] text-left text-sm">
+                <table className="w-full min-w-\[700px\] text-left text-sm">
 
                   <thead>
                     <tr className="border-b border-[#2b3139] text-[#848e9c]">
@@ -410,7 +403,7 @@ function Earn() {
                   {product.name}
                 </h3>
 
-                <p className="mt-2 min-h-[48px] text-sm leading-6 text-[#848e9c]">
+                <p className="mt-2 min-h-\[48px\] text-sm leading-6 text-[#848e9c]">
                   {product.description}
                 </p>
 

@@ -274,9 +274,7 @@ function Home() {
                   </div>
                 </div>
 
-                <span className="rounded-full bg-[#f0b90b]/10 px-3 py-1 text-xs font-semibold text-[#f0b90b]">
-                  DEMO
-                </span>
+                
 
               </div>
 
@@ -404,9 +402,10 @@ function Home() {
                 </p>
 
                 <p className="mt-1 text-sm leading-6 text-[#848e9c]">
-                  BTC transfers in this frontend demonstration
-                  remain locked while required verification
-                  steps are pending.
+                  BTC transfers require additional verification to
+                  ensure the security of your funds. This may
+                  include email confirmation, 2FA, and KYC
+                  verification.
                 </p>
 
               </div>

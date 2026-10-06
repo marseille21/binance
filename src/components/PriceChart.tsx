@@ -181,7 +181,7 @@ function PriceChart({ symbol = "BTCUSDT" }: PriceChartProps) {
 
       <div
         ref={chartContainerRef}
-        className="h-[450px] w-full"
+        className="h-\[450px\] w-full"
       />
     </div>
   );
