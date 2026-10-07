@@ -1,4 +1,4 @@
-  import { Navigate, Route, Routes } from "react-router-dom";
+ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { WalletProvider } from "./context/WalletContext";
@@ -9,13 +9,18 @@ import Markets from "./pages/Markets";
 import Trade from "./pages/Trade";
 import Buy from "./pages/Buy";
 import Earn from "./pages/Earn";
+import Profile from "./pages/Profile";
+import Wallet from "./pages/Wallet";
+import Settings from "./pages/Settings";
+import Support from "./pages/Support";
 
 import Navbar from "./components/Navbar";
 
 function AppRoutes() {
   const { user } = useAuth();
 
-  
+  // If the user is not logged in,
+  // only show the Login page.
   if (!user) {
     return (
       <Routes>
@@ -24,22 +29,19 @@ function AppRoutes() {
     );
   }
 
-  
   return (
     <div className="min-h-screen w-full overflow-x-hidden bg-[#0b0e11] text-white">
-    
       <Navbar />
 
-      
       <main className="w-full overflow-x-hidden">
         <Routes>
-          
+          {/* HOME */}
           <Route path="/" element={<Home />} />
 
-        
+          {/* MARKETS */}
           <Route path="/markets" element={<Markets />} />
 
-        
+          {/* TRADE */}
           <Route
             path="/trade"
             element={
@@ -55,53 +57,37 @@ function AppRoutes() {
             element={<Trade />}
           />
 
-          
+          {/* BUY */}
           <Route path="/buy" element={<Buy />} />
 
-          
+          {/* EARN */}
           <Route path="/earn" element={<Earn />} />
 
-        
+          {/* PROFILE */}
           <Route
             path="/profile"
-            element={
-              <div className="min-h-screen w-full p-4 sm:p-6 lg:p-8">
-                <div className="mx-auto max-w-6xl">
-                  <h1 className="text-xl font-semibold sm:text-2xl">
-                    Profile
-                  </h1>
-                </div>
-              </div>
-            }
+            element={<Profile />}
           />
 
-    
+          {/* WALLET */}
           <Route
             path="/wallet"
-            element={
-              <div className="min-h-screen w-full p-4 sm:p-6 lg:p-8">
-                <div className="mx-auto max-w-6xl">
-                  <h1 className="text-xl font-semibold sm:text-2xl">
-                    Wallet
-                  </h1>
-                </div>
-              </div>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <div className="min-h-screen w-full p-4 sm:p-6 lg:p-8">
-                <div className="mx-auto max-w-6xl">
-                  <h1 className="text-xl font-semibold sm:text-2xl">
-                    Settings
-                  </h1>
-                </div>
-              </div>
-            }
+            element={<Wallet />}
           />
 
-        
+          {/* SETTINGS */}
+          <Route
+            path="/settings"
+            element={<Settings />}
+          />
+
+          {/* SUPPORT */}
+          <Route
+            path="/support"
+            element={<Support />}
+          />
+
+          {/* UNKNOWN PAGE */}
           <Route
             path="*"
             element={
@@ -117,7 +103,6 @@ function AppRoutes() {
   );
 }
 
- 
 export default function App() {
   return (
     <AuthProvider>
