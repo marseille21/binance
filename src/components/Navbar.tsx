@@ -1,5 +1,7 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import {
   Search,
   Menu,
@@ -10,6 +12,7 @@ import {
   Wallet,
   LogOut,
   Bell,
+  LifeBuoy,
 } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
@@ -25,13 +28,11 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const navigate = useNavigate();
-
   const { user, logout } = useAuth();
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] =
-    useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -55,14 +56,18 @@ export default function Navbar() {
       })
     : "No login recorded";
 
+  const closeAllMenus = () => {
+    setProfileOpen(false);
+    setNotificationsOpen(false);
+    setMobileOpen(false);
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-[#2b2f36] bg-[#0b0e11] text-white">
       {/* MAIN NAVBAR */}
       <div className="flex h-16 items-center justify-between px-4 lg:px-6">
-
         {/* LEFT */}
         <div className="flex items-center gap-4 lg:gap-6">
-
           {/* MOBILE MENU */}
           <button
             type="button"
@@ -72,18 +77,15 @@ export default function Navbar() {
               setNotificationsOpen(false);
             }}
             className="rounded-md p-2 transition hover:bg-[#181a20] lg:hidden"
+            aria-label="Toggle menu"
           >
-            {mobileOpen ? (
-              <X size={22} />
-            ) : (
-              <Menu size={22} />
-            )}
+            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
 
           {/* LOGO */}
           <Link
             to="/"
-            onClick={() => setMobileOpen(false)}
+            onClick={closeAllMenus}
             className="text-xl font-bold text-[#f0b90b]"
           >
             Binance
@@ -95,6 +97,7 @@ export default function Navbar() {
               <Link
                 key={link.label}
                 to={link.to}
+                onClick={closeAllMenus}
                 className="text-sm font-medium text-gray-200 transition hover:text-[#f0b90b]"
               >
                 {link.label}
@@ -105,11 +108,11 @@ export default function Navbar() {
 
         {/* RIGHT */}
         <div className="flex items-center gap-1 sm:gap-2">
-
           {/* SEARCH */}
           <button
             type="button"
             className="rounded-full p-2 transition hover:bg-[#181a20]"
+            aria-label="Search"
           >
             <Search size={20} />
           </button>
@@ -119,12 +122,11 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => {
-                setNotificationsOpen(
-                  !notificationsOpen
-                );
+                setNotificationsOpen(!notificationsOpen);
                 setProfileOpen(false);
               }}
               className="relative rounded-full p-2 transition hover:bg-[#181a20]"
+              aria-label="Notifications"
             >
               <Bell size={20} />
 
@@ -133,17 +135,16 @@ export default function Navbar() {
 
             {notificationsOpen && (
               <div className="absolute right-0 top-12 w-[280px] overflow-hidden rounded-xl border border-[#2b2f36] bg-[#181a20] shadow-2xl sm:w-80">
-
+                {/* NOTIFICATION HEADER */}
                 <div className="flex items-center justify-between border-b border-[#2b2f36] px-4 py-3">
-                  <h3 className="font-semibold">
-                    Notifications
-                  </h3>
+                  <h3 className="font-semibold">Notifications</h3>
 
                   <span className="text-xs text-gray-500">
                     1 new
                   </span>
                 </div>
 
+                {/* NOTIFICATION */}
                 <div className="p-3">
                   <div className="rounded-lg bg-[#0b0e11] p-3">
                     <p className="text-sm font-medium">
@@ -172,14 +173,12 @@ export default function Navbar() {
                 setNotificationsOpen(false);
               }}
               className="flex items-center gap-2 rounded-full p-1 transition hover:bg-[#181a20]"
+              aria-label="Open profile menu"
             >
               {/* PROFILE IMAGE */}
               <div className="h-9 w-9 overflow-hidden rounded-full border-2 border-[#f0b90b] bg-[#2b2f36]">
                 <img
-                  src={
-                    user?.profileImage ||
-                    profileImage
-                  }
+                  src={user?.profileImage || profileImage}
                   alt="Profile"
                   className="h-full w-full object-cover"
                 />
@@ -196,19 +195,13 @@ export default function Navbar() {
             {/* PROFILE DROPDOWN */}
             {profileOpen && (
               <div className="absolute right-0 top-12 w-[300px] overflow-hidden rounded-xl border border-[#2b2f36] bg-[#181a20] shadow-2xl">
-
                 {/* USER INFORMATION */}
                 <div className="border-b border-[#2b2f36] p-4">
-
                   <div className="flex items-center gap-3">
-
                     {/* BIG PROFILE IMAGE */}
                     <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-[#f0b90b] bg-[#2b2f36]">
                       <img
-                        src={
-                          user?.profileImage ||
-                          profileImage
-                        }
+                        src={user?.profileImage || profileImage}
                         alt="Profile"
                         className="h-full w-full object-cover"
                       />
@@ -217,20 +210,17 @@ export default function Navbar() {
                     {/* USERNAME + EMAIL */}
                     <div className="min-w-0">
                       <p className="truncate font-semibold">
-                        {user?.username ||
-                          "LilyKevin182"}
+                        {user?.username || "LilyKevin182"}
                       </p>
 
                       <p className="truncate text-xs text-gray-400">
-                        {user?.email ||
-                          "kj5057409@gmail.com"}
+                        {user?.email || "kj5057409@gmail.com"}
                       </p>
                     </div>
                   </div>
 
                   {/* LAST LOGIN */}
                   <div className="mt-4 rounded-lg border border-[#2b2f36] bg-[#0b0e11] p-3">
-
                     <p className="text-xs font-medium text-[#848e9c]">
                       Last login
                     </p>
@@ -238,13 +228,11 @@ export default function Navbar() {
                     <p className="mt-1 text-sm font-medium text-white">
                       {formattedLoginDate}
                     </p>
-
                   </div>
                 </div>
 
                 {/* MENU */}
                 <div className="p-2">
-
                   {/* PROFILE */}
                   <button
                     type="button"
@@ -255,7 +243,7 @@ export default function Navbar() {
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm transition hover:bg-[#2b2f36]"
                   >
                     <User size={18} />
-                    Profile
+                    <span>Profile</span>
                   </button>
 
                   {/* WALLET */}
@@ -268,7 +256,7 @@ export default function Navbar() {
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm transition hover:bg-[#2b2f36]"
                   >
                     <Wallet size={18} />
-                    Wallet
+                    <span>Wallet</span>
                   </button>
 
                   {/* SETTINGS */}
@@ -281,9 +269,23 @@ export default function Navbar() {
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm transition hover:bg-[#2b2f36]"
                   >
                     <Settings size={18} />
-                    Settings
+                    <span>Settings</span>
                   </button>
 
+                  {/* SUPPORT */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfileOpen(false);
+                      navigate("/support");
+                    }}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm transition hover:bg-[#2b2f36]"
+                  >
+                    <LifeBuoy size={18} />
+                    <span>Support</span>
+                  </button>
+
+                  {/* DIVIDER */}
                   <div className="my-2 border-t border-[#2b2f36]" />
 
                   {/* LOGOUT */}
@@ -293,7 +295,7 @@ export default function Navbar() {
                     className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm text-[#f6465d] transition hover:bg-[#2b2f36]"
                   >
                     <LogOut size={18} />
-                    Log out
+                    <span>Log out</span>
                   </button>
                 </div>
               </div>
@@ -316,9 +318,71 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+
+            {/* MOBILE PROFILE LINKS */}
+            <div className="my-2 border-t border-[#2b2f36]" />
+
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                navigate("/profile");
+              }}
+              className="flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition hover:bg-[#181a20] hover:text-[#f0b90b]"
+            >
+              <User size={18} />
+              Profile
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                navigate("/wallet");
+              }}
+              className="flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition hover:bg-[#181a20] hover:text-[#f0b90b]"
+            >
+              <Wallet size={18} />
+              Wallet
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                navigate("/settings");
+              }}
+              className="flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition hover:bg-[#181a20] hover:text-[#f0b90b]"
+            >
+              <Settings size={18} />
+              Settings
+            </button>
+
+            {/* MOBILE SUPPORT */}
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                navigate("/support");
+              }}
+              className="flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition hover:bg-[#181a20] hover:text-[#f0b90b]"
+            >
+              <LifeBuoy size={18} />
+              Support
+            </button>
+
+            {/* MOBILE LOGOUT */}
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="mt-1 flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm text-[#f6465d] transition hover:bg-[#181a20]"
+            >
+              <LogOut size={18} />
+              Log out
+            </button>
           </nav>
         </div>
       )}
     </header>
   );
-}
+} 
