@@ -1,3 +1,4 @@
+
 import {
   createContext,
   useContext,
@@ -15,23 +16,14 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
-
-  login: (
-    username: string,
-    email: string
-  ) => void;
-
+  login: (username: string, email: string) => void;
   logout: () => void;
-
-  updateProfileImage: (
-    image: string
-  ) => void;
+  updateProfileImage: (image: string) => void;
 }
 
-const AuthContext =
-  createContext<AuthContextType | undefined>(
-    undefined
-  );
+const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -39,103 +31,170 @@ interface AuthProviderProps {
 
 const PROFILE_KEY = "crypto_user_profile";
 const LOGIN_KEY = "crypto_user_logged_in";
+const SESSION_KEY = "crypto_session_expires_at";
 
-export function AuthProvider({
-  children,
-}: AuthProviderProps) {
-  const [profile, setProfile] =
-    useState<User | null>(() => {
-      const savedProfile =
-        localStorage.getItem(PROFILE_KEY);
 
-      if (!savedProfile) {
-        return null;
-      }
+const SESSION_DURATION = 10 * 60 * 1000;
 
-      try {
-        const parsedProfile = JSON.parse(savedProfile);
+function clearStoredSession() {
+  localStorage.removeItem(PROFILE_KEY);
+  localStorage.removeItem(LOGIN_KEY);
+  localStorage.removeItem(SESSION_KEY);
+}
 
-        return {
-          username: parsedProfile.username ?? "",
-          email: parsedProfile.email ?? "",
-          profileImage:
-            parsedProfile.profileImage ?? null,
-          loginDate:
-            parsedProfile.loginDate ?? null,
-        };
-      } catch {
-        localStorage.removeItem(PROFILE_KEY);
-        return null;
-      }
-    });
+function getInitialSession(): {
+  profile: User | null;
+  isLoggedIn: boolean;
+} {
+  try {
+    const savedProfile = localStorage.getItem(PROFILE_KEY);
+    const savedLoginStatus = localStorage.getItem(LOGIN_KEY);
+    const expiresAt = Number(localStorage.getItem(SESSION_KEY));
 
-  const [isLoggedIn, setIsLoggedIn] =
-    useState<boolean>(() => {
-      return (
-        localStorage.getItem(LOGIN_KEY) ===
-        "true"
-      );
-    });
+    
+    if (
+      savedLoginStatus !== "true" ||
+      !savedProfile ||
+      !expiresAt ||
+      Date.now() >= expiresAt
+    ) {
+      clearStoredSession();
 
-  const user =
-    isLoggedIn && profile
-      ? profile
-      : null;
-
-  // Save profile whenever it changes
-  useEffect(() => {
-    if (profile) {
-      localStorage.setItem(
-        PROFILE_KEY,
-        JSON.stringify(profile)
-      );
+      return {
+        profile: null,
+        isLoggedIn: false,
+      };
     }
-  }, [profile]);
 
-  // Save login status
-  useEffect(() => {
-    localStorage.setItem(
-      LOGIN_KEY,
-      String(isLoggedIn)
-    );
-  }, [isLoggedIn]);
+    const parsedProfile = JSON.parse(savedProfile);
 
-  // LOGIN
-  const login = (
-    username: string,
-    email: string
-  ) => {
-    const currentLoginDate =
-      new Date().toISOString();
+    const profile: User = {
+      username: parsedProfile.username ?? "",
+      email: parsedProfile.email ?? "",
+      profileImage: parsedProfile.profileImage ?? null,
+      loginDate: parsedProfile.loginDate ?? null,
+    };
 
-    setProfile((currentProfile) => ({
+    return {
+      profile,
+      isLoggedIn: true,
+    };
+  } catch {
+    clearStoredSession();
+
+    return {
+      profile: null,
+      isLoggedIn: false,
+    };
+  }
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [initialSession] = useState(getInitialSession);
+
+  const [profile, setProfile] = useState<User | null>(
+    initialSession.profile
+  );
+
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
+    initialSession.isLoggedIn
+  );
+
+  const user = isLoggedIn && profile ? profile : null;
+  const login = (username: string, email: string) => {
+    const currentLoginDate = new Date().toISOString();
+
+    const newProfile: User = {
       username,
       email,
-
-      profileImage:
-        currentProfile?.profileImage ?? null,
-
-      // Save date + time of login
+      profileImage: profile?.profileImage ?? null,
       loginDate: currentLoginDate,
-    }));
+    };
 
+    
+    const expiresAt = Date.now() + SESSION_DURATION;
+
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(newProfile));
+    localStorage.setItem(LOGIN_KEY, "true");
+    localStorage.setItem(SESSION_KEY, String(expiresAt));
+
+    setProfile(newProfile);
     setIsLoggedIn(true);
   };
 
-  // LOGOUT
+
   const logout = () => {
+    clearStoredSession();
+
     setProfile(null);
     setIsLoggedIn(false);
   };
 
-  // UPDATE PROFILE IMAGE
-  const updateProfileImage = (
-    image: string
-  ) => {
-    setProfile((currentProfile) => {
-      if (!currentProfile) {
-        return null;
+  
+  useEffect(() => {
+    if (!user) return;
+
+    const checkSession = () => {
+      const expiresAt = Number(localStorage.getItem(SESSION_KEY));
+
+      if (
+        !expiresAt ||
+        Date.now() >= expiresAt ||
+        localStorage.getItem(LOGIN_KEY) !== "true"
+      ) {
+        logout();
       }
+    };
+
+    
+    checkSession();
+
+    // Check every second.
+    const intervalId = window.setInterval(checkSession, 1000);
+
+    // Check again when the user returns to the browser tab.
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkSession();
+      }
+    };
+
+    
+    const handleStorageChange = (event: StorageEvent) => {
+      if (
+        event.key === SESSION_KEY ||
+        event.key === LOGIN_KEY
+      ) {
+        checkSession();
+      }
+    };
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange
+    );
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.clearInterval(intervalId);
+
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
+
+      window.removeEventListener(
+        "storage",
+        handleStorageChange
+      );
+    };
+  }, [user]);
+
+
+  const updateProfileImage = (image: string) => {
+    setProfile((currentProfile) => {
+      if (!currentProfile) return null;
 
       return {
         ...currentProfile,
@@ -143,6 +202,13 @@ export function AuthProvider({
       };
     });
   };
+
+  
+  useEffect(() => {
+    if (profile && isLoggedIn) {
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    }
+  }, [profile, isLoggedIn]);
 
   return (
     <AuthContext.Provider
@@ -159,14 +225,14 @@ export function AuthProvider({
 }
 
 export function useAuth() {
-  const context =
-    useContext(AuthContext);
+  const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error(
-      "useAuth must be used inside AuthProvider"
-    );
+    throw new Error("useAuth must be used inside AuthProvider");
   }
 
   return context;
 }
+
+
+ 
