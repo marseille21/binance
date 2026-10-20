@@ -63,7 +63,7 @@ const INITIAL_BALANCES: Balances = {
   ETH: 500000 / PRICES.ETH,
   BNB: 250000 / PRICES.BNB,
   SOL: 0,
-  USDT: 90000,
+  USDT: 673000,
 };
 
 const WalletContext =

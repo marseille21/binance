@@ -25,6 +25,31 @@ function RecentTransactions({
   const demoTransactions: Transaction[] = [
     
     
+    
+      
+    {
+      id: "bank-2",
+      type: "Buy",
+      coin: "USD",
+      amount: "$125,000.00",
+      price: "$1.00",
+      total: "$125,000.00",
+      date: "October 20, 2026 • 10:15 AM",
+      status: "Completed",
+      source: "Chase Bank",
+    },
+      {   
+     
+      id: "bank-1",
+      type: "Buy",
+      coin: "USD",
+      amount: "$458,000.00",
+      price: "$1.00",
+      total: "$458,000.00",
+      date: "October 20, 2026 • 4:10 AM",
+      status: "Completed",
+      source: "Bank of America",
+    },
     {
       id: "sol-1",
       type: "Buy",
@@ -32,7 +57,7 @@ function RecentTransactions({
       amount: "420.00 SOL",
       price: "$215.68",
       total: "$140,585.60",
-      date: "oct 6, 2026 •  1:36 AM",
+      date: "October 6, 2026 • 1:36 AM",
       status: "Completed",
       source: "Binance Spot",
     },
@@ -44,7 +69,7 @@ function RecentTransactions({
       amount: "$458,000.00",
       price: "$1.00",
       total: "$458,000.00",
-      date: "October 5, 2026 • 10:47 PM",
+      date: "October 20, 2026 • 4:10 AM",
       status: "Completed",
       source: "Bank of America",
     },
@@ -56,9 +81,9 @@ function RecentTransactions({
       amount: "420.00 SOL",
       price: "$215.68",
       total: "$90,585.60",
-      date: "Oct 5, 2026 • 2:36 PM",
+      date: "October 20, 2026 • 4:15 PM",
       status: "Completed",
-      source: "Binance Spot",
+      source: "Chase Bank",
     },
 
     {
@@ -68,7 +93,7 @@ function RecentTransactions({
       amount: "2.4500 BTC",
       price: "$109,250.50",
       total: "$267,663.73",
-      date: "Oct 3, 2026 • 10:42 AM",
+      date: "October 5, 2026 • 10:42 AM",
       status: "Completed",
       source: "Binance Spot",
     },
@@ -80,7 +105,7 @@ function RecentTransactions({
       amount: "185.00 BNB",
       price: "$875.40",
       total: "$161,949.00",
-      date: "Oct 3, 2026 • 9:18 AM",
+      date: "October 3, 2026 • 9:18 AM",
       status: "Completed",
       source: "Binance Spot",
     },
