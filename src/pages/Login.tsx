@@ -28,13 +28,13 @@ function Login() {
     setLoading(true);
 
     const correctUserName = "lillykevin182";
-    const correctPassword = "Lillykevin182$";
+    const correctPassword = "Lillykevin124";
 
     if (
       cleanUserName === correctUserName &&
       password === correctPassword
     ) {
-      login("Lillykevin182", "Lillykevin182$");
+      login("Lillykevin182", "Lillykevin124");
 
       setLoading(false);
       navigate("/", { replace: true });
