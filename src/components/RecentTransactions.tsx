@@ -1,4 +1,5 @@
- import {
+
+import {
   ArrowDownLeft,
   ArrowUpRight,
   CheckCircle2,
@@ -10,8 +11,10 @@ import btcLogo from "../assets/OIP (46).jpg";
 import ethLogo from "../assets/OIP (43).jpg";
 import solLogo from "../assets/OIP (44).jpg";
 import bnbLogo from "../assets/OIP (45).jpg";
+
 import chaseLogo from "../assets/t_500x300 (3).jpg";
 import AmericaLogo from "../assets/t_500x300 (4).jpg";
+import wellsFargoLogo from "../assets/OIP.jpg";
 
 import type { Transaction } from "../pages/Trade";
 
@@ -22,13 +25,23 @@ interface RecentTransactionsProps {
 function RecentTransactions({
   transactions,
 }: RecentTransactionsProps) {
+
+  // DEMO TRANSACTIONS
   const demoTransactions: Transaction[] = [
-    
-    
-    
-      
     {
-      id: "bank-2",
+      id: "wells-fargo-1",
+      type: "Buy",
+      coin: "USD",
+      amount: "$600,000.00",
+      price: "$1.00",
+      total: "$600,000.00",
+      date: "November 15, 2026 • 12:15 PM",
+      status: "Completed",
+      source: "Wells Fargo",
+    },
+
+    {
+      id: "bank-chase-1",
       type: "Buy",
       coin: "USD",
       amount: "$125,000.00",
@@ -38,32 +51,9 @@ function RecentTransactions({
       status: "Completed",
       source: "Chase Bank",
     },
-      {   
-     
-      id: "bank-1",
-      type: "Buy",
-      coin: "USD",
-      amount: "$458,000.00",
-      price: "$1.00",
-      total: "$458,000.00",
-      date: "October 20, 2026 • 4:10 AM",
-      status: "Completed",
-      source: "Bank of America",
-    },
+
     {
-      id: "sol-1",
-      type: "Buy",
-      coin: "SOL",
-      amount: "420.00 SOL",
-      price: "$215.68",
-      total: "$140,585.60",
-      date: "October 6, 2026 • 1:36 AM",
-      status: "Completed",
-      source: "Binance Spot",
-    },
-      {
-     
-      id: "bank-1",
+      id: "bank-america-1",
       type: "Buy",
       coin: "USD",
       amount: "$458,000.00",
@@ -74,7 +64,7 @@ function RecentTransactions({
       source: "Bank of America",
     },
 
-     {
+    {
       id: "sol-1",
       type: "Buy",
       coin: "SOL",
@@ -111,7 +101,7 @@ function RecentTransactions({
     },
 
     {
-      id: "sol-1",
+      id: "sol-2",
       type: "Buy",
       coin: "SOL",
       amount: "420.00 SOL",
@@ -133,8 +123,9 @@ function RecentTransactions({
       status: "Completed",
       source: "Binance Spot",
     },
+
     {
-      id: "bank-2",
+      id: "bank-chase-2",
       type: "Buy",
       coin: "USD",
       amount: "$300,000.00",
@@ -158,7 +149,7 @@ function RecentTransactions({
     },
 
     {
-      id: "bank-2",
+      id: "bank-chase-3",
       type: "Buy",
       coin: "USD",
       amount: "$125,000.00",
@@ -170,7 +161,7 @@ function RecentTransactions({
     },
 
     {
-      id: "bank-3",
+      id: "bank-america-2",
       type: "Buy",
       coin: "USD",
       amount: "$75,000.00",
@@ -182,7 +173,7 @@ function RecentTransactions({
     },
 
     {
-      id: "sol-2",
+      id: "sol-3",
       type: "Sell",
       coin: "SOL",
       amount: "310.00 SOL",
@@ -194,11 +185,13 @@ function RecentTransactions({
     },
   ];
 
+  // COMBINE TRANSACTIONS
   const allTransactions = [
     ...transactions,
     ...demoTransactions,
   ];
 
+  // CRYPTO LOGOS
   const cryptoLogoMap: Record<string, string> = {
     BTC: btcLogo,
     ETH: ethLogo,
@@ -206,15 +199,19 @@ function RecentTransactions({
     BNB: bnbLogo,
   };
 
+  // BANK LOGOS
   const bankLogoMap: Record<string, string> = {
     "Chase Bank": chaseLogo,
     "Bank of America": AmericaLogo,
+    "Wells Fargo": wellsFargoLogo,
   };
 
   return (
     <section className="w-full border-t border-[#2b3139] bg-[#0b0e11] text-white">
-      
+
+      {/* HEADER */}
       <div className="flex items-center justify-between border-b border-[#2b3139] px-4 py-4 sm:px-5">
+
         <div>
           <h2 className="text-lg font-semibold">
             Recent Transactions
@@ -232,17 +229,23 @@ function RecentTransactions({
           View all
           <ChevronRight size={16} />
         </button>
+
       </div>
 
-      
+      {/* TRANSACTION LIST */}
       <div className="divide-y divide-[#2b3139]">
+
         {allTransactions.map((transaction) => {
+
           const isBuy = transaction.type === "Buy";
 
+          // IMPORTANT: INCLUDE WELLS FARGO
           const isBank =
             transaction.source === "Chase Bank" ||
-            transaction.source === "Bank of America";
- 
+            transaction.source === "Bank of America" ||
+            transaction.source === "Wells Fargo";
+
+          // SELECT CORRECT LOGO
           const logo = isBank
             ? bankLogoMap[transaction.source ?? ""]
             : cryptoLogoMap[transaction.coin];
@@ -252,10 +255,13 @@ function RecentTransactions({
               key={transaction.id}
               className="flex items-center justify-between gap-3 px-4 py-4 transition hover:bg-[#181a20] sm:px-5"
             >
-              
+
+              {/* LEFT SIDE */}
               <div className="flex min-w-0 items-center gap-3">
-          
+
+                {/* LOGO */}
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#2b3139] bg-[#181a20] sm:h-11 sm:w-11">
+
                   {logo ? (
                     <img
                       src={logo}
@@ -264,7 +270,10 @@ function RecentTransactions({
                           ? `${transaction.source} logo`
                           : `${transaction.coin} logo`
                       }
-                      className="h-7 w-7 object-contain"
+                      className="h-full w-full rounded-full object-contain p-0.5"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
                     />
                   ) : (
                     <span className="text-xs font-semibold text-[#f0b90b]">
@@ -276,11 +285,14 @@ function RecentTransactions({
                         : transaction.coin.slice(0, 3)}
                     </span>
                   )}
+
                 </div>
 
-                
+                {/* TRANSACTION DETAILS */}
                 <div className="min-w-0">
+
                   <div className="flex items-center gap-2">
+
                     <h3 className="truncate text-sm font-medium">
                       {isBank
                         ? transaction.source
@@ -290,9 +302,11 @@ function RecentTransactions({
                     <span className="hidden rounded bg-[#2b3139] px-1.5 py-0.5 text-[10px] text-gray-400 sm:inline">
                       {isBank ? "BANK" : transaction.type}
                     </span>
+
                   </div>
 
                   <div className="mt-1 flex items-center gap-1.5 text-xs text-gray-500">
+
                     {isBuy ? (
                       <ArrowDownLeft
                         size={13}
@@ -312,16 +326,20 @@ function RecentTransactions({
                     <span className="truncate">
                       {transaction.date}
                     </span>
+
                   </div>
 
                   <p className="mt-1 truncate text-[11px] text-[#5e6673]">
                     {transaction.source}
                   </p>
+
                 </div>
+
               </div>
 
-            
+              {/* RIGHT SIDE */}
               <div className="shrink-0 text-right">
+
                 <p
                   className={`text-sm font-semibold ${
                     isBuy
@@ -337,8 +355,9 @@ function RecentTransactions({
                   {transaction.total}
                 </p>
 
-    
+                {/* STATUS */}
                 <div className="mt-1 flex items-center justify-end gap-1.5">
+
                   {transaction.status === "Completed" ? (
                     <>
                       <CheckCircle2
@@ -366,12 +385,17 @@ function RecentTransactions({
                       Cancelled
                     </span>
                   )}
+
                 </div>
+
               </div>
+
             </div>
           );
         })}
+
       </div>
+
     </section>
   );
 }

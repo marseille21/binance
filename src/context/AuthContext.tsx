@@ -152,7 +152,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Check every second.
     const intervalId = window.setInterval(checkSession, 1000);
 
-    // Check again when the user returns to the browser tab.
+
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         checkSession();
