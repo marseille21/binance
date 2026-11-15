@@ -1,4 +1,3 @@
-
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -25,7 +24,6 @@ interface RecentTransactionsProps {
 function RecentTransactions({
   transactions,
 }: RecentTransactionsProps) {
-
   // DEMO TRANSACTIONS
   const demoTransactions: Transaction[] = [
     {
@@ -39,7 +37,6 @@ function RecentTransactions({
       status: "Completed",
       source: "Wells Fargo",
     },
-
     {
       id: "bank-chase-1",
       type: "Buy",
@@ -51,7 +48,6 @@ function RecentTransactions({
       status: "Completed",
       source: "Chase Bank",
     },
-
     {
       id: "bank-america-1",
       type: "Buy",
@@ -63,7 +59,6 @@ function RecentTransactions({
       status: "Completed",
       source: "Bank of America",
     },
-
     {
       id: "sol-1",
       type: "Buy",
@@ -75,7 +70,6 @@ function RecentTransactions({
       status: "Completed",
       source: "Chase Bank",
     },
-
     {
       id: "btc-1",
       type: "Buy",
@@ -87,7 +81,6 @@ function RecentTransactions({
       status: "Completed",
       source: "Binance Spot",
     },
-
     {
       id: "bnb-1",
       type: "Sell",
@@ -99,7 +92,6 @@ function RecentTransactions({
       status: "Completed",
       source: "Binance Spot",
     },
-
     {
       id: "sol-2",
       type: "Buy",
@@ -111,7 +103,6 @@ function RecentTransactions({
       status: "Completed",
       source: "Binance Spot",
     },
-
     {
       id: "btc-2",
       type: "Sell",
@@ -123,7 +114,6 @@ function RecentTransactions({
       status: "Completed",
       source: "Binance Spot",
     },
-
     {
       id: "bank-chase-2",
       type: "Buy",
@@ -135,7 +125,6 @@ function RecentTransactions({
       status: "Completed",
       source: "Chase Bank",
     },
-
     {
       id: "bnb-2",
       type: "Buy",
@@ -147,7 +136,6 @@ function RecentTransactions({
       status: "Completed",
       source: "Binance Spot",
     },
-
     {
       id: "bank-chase-3",
       type: "Buy",
@@ -159,7 +147,6 @@ function RecentTransactions({
       status: "Completed",
       source: "Chase Bank",
     },
-
     {
       id: "bank-america-2",
       type: "Buy",
@@ -167,11 +154,10 @@ function RecentTransactions({
       amount: "$75,000.00",
       price: "$1.00",
       total: "$75,000.00",
-      date: "September 23, 2026 • 2:47 PM",
+      date: "September 23, 2026 • 2:47 AM",
       status: "Completed",
       source: "Bank of America",
     },
-
     {
       id: "sol-3",
       type: "Sell",
@@ -211,7 +197,6 @@ function RecentTransactions({
 
       {/* HEADER */}
       <div className="flex items-center justify-between border-b border-[#2b3139] px-4 py-4 sm:px-5">
-
         <div>
           <h2 className="text-lg font-semibold">
             Recent Transactions
@@ -229,23 +214,18 @@ function RecentTransactions({
           View all
           <ChevronRight size={16} />
         </button>
-
       </div>
 
       {/* TRANSACTION LIST */}
       <div className="divide-y divide-[#2b3139]">
-
         {allTransactions.map((transaction) => {
-
           const isBuy = transaction.type === "Buy";
 
-          // IMPORTANT: INCLUDE WELLS FARGO
           const isBank =
             transaction.source === "Chase Bank" ||
             transaction.source === "Bank of America" ||
             transaction.source === "Wells Fargo";
 
-          // SELECT CORRECT LOGO
           const logo = isBank
             ? bankLogoMap[transaction.source ?? ""]
             : cryptoLogoMap[transaction.coin];
@@ -255,13 +235,11 @@ function RecentTransactions({
               key={transaction.id}
               className="flex items-center justify-between gap-3 px-4 py-4 transition hover:bg-[#181a20] sm:px-5"
             >
-
               {/* LEFT SIDE */}
               <div className="flex min-w-0 items-center gap-3">
 
                 {/* LOGO */}
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#2b3139] bg-[#181a20] sm:h-11 sm:w-11">
-
                   {logo ? (
                     <img
                       src={logo}
@@ -285,14 +263,11 @@ function RecentTransactions({
                         : transaction.coin.slice(0, 3)}
                     </span>
                   )}
-
                 </div>
 
                 {/* TRANSACTION DETAILS */}
                 <div className="min-w-0">
-
                   <div className="flex items-center gap-2">
-
                     <h3 className="truncate text-sm font-medium">
                       {isBank
                         ? transaction.source
@@ -302,11 +277,9 @@ function RecentTransactions({
                     <span className="hidden rounded bg-[#2b3139] px-1.5 py-0.5 text-[10px] text-gray-400 sm:inline">
                       {isBank ? "BANK" : transaction.type}
                     </span>
-
                   </div>
 
                   <div className="mt-1 flex items-center gap-1.5 text-xs text-gray-500">
-
                     {isBuy ? (
                       <ArrowDownLeft
                         size={13}
@@ -320,26 +293,21 @@ function RecentTransactions({
                     )}
 
                     <span>{transaction.type}</span>
-
                     <span>•</span>
 
                     <span className="truncate">
                       {transaction.date}
                     </span>
-
                   </div>
 
                   <p className="mt-1 truncate text-[11px] text-[#5e6673]">
                     {transaction.source}
                   </p>
-
                 </div>
-
               </div>
 
               {/* RIGHT SIDE */}
               <div className="shrink-0 text-right">
-
                 <p
                   className={`text-sm font-semibold ${
                     isBuy
@@ -357,7 +325,6 @@ function RecentTransactions({
 
                 {/* STATUS */}
                 <div className="mt-1 flex items-center justify-end gap-1.5">
-
                   {transaction.status === "Completed" ? (
                     <>
                       <CheckCircle2
@@ -385,17 +352,12 @@ function RecentTransactions({
                       Cancelled
                     </span>
                   )}
-
                 </div>
-
               </div>
-
             </div>
           );
         })}
-
       </div>
-
     </section>
   );
 }
