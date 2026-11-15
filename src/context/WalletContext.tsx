@@ -1,4 +1,4 @@
- import {
+  import {
   createContext,
   useContext,
   useState,
@@ -56,14 +56,13 @@ const PRICES: Record<Coin, number> = {
   SOL: 215.68,
   USDT: 1,
 };
- 
 
 const INITIAL_BALANCES: Balances = {
   BTC: 1050000 / PRICES.BTC,
   ETH: 500000 / PRICES.ETH,
   BNB: 250000 / PRICES.BNB,
   SOL: 0,
-  USDT: 673000,
+  USDT: 1273000,
 };
 
 const WalletContext =
@@ -82,26 +81,19 @@ export function WalletProvider({
   const [earnPositions, setEarnPositions] =
     useState<EarnPosition[]>([]);
 
- 
-
   const subscribeToEarn = (
     coin: Coin,
     product: string,
     amount: number,
     apy: number
-  ) => {
-    if (amount <= 0) {
-      return false;
-    }
-
-    if (balances[coin] < amount) {
+  ): boolean => {
+    if (amount <= 0 || balances[coin] < amount) {
       return false;
     }
 
     setBalances((previous) => ({
       ...previous,
-      [coin]:
-        previous[coin] - amount,
+      [coin]: previous[coin] - amount,
     }));
 
     const position: EarnPosition = {
@@ -110,8 +102,7 @@ export function WalletProvider({
       product,
       amount,
       apy,
-      startedAt:
-        new Date().toLocaleString(),
+      startedAt: new Date().toLocaleString(),
       earned: 0,
     };
 
@@ -123,44 +114,32 @@ export function WalletProvider({
     return true;
   };
 
- 
   const buyCrypto = (
     coin: Coin,
     usdAmount: number
-  ) => {
-    if (usdAmount <= 0) {
+  ): boolean => {
+    if (usdAmount <= 0 || coin === "USDT") {
       return false;
     }
- 
+
     const fee = usdAmount * 0.001;
+    const totalCost = usdAmount + fee;
 
-    const totalCost =
-      usdAmount + fee;
-
-    
     if (balances.USDT < totalCost) {
       return false;
     }
 
- 
     const cryptoAmount =
       usdAmount / PRICES[coin];
 
-    
     setBalances((previous) => ({
       ...previous,
-
-      USDT:
-        previous.USDT - totalCost,
-
-      [coin]:
-        previous[coin] +
-        cryptoAmount,
+      USDT: previous.USDT - totalCost,
+      [coin]: previous[coin] + cryptoAmount,
     }));
 
     return true;
   };
- 
 
   const liquidValue =
     balances.BTC * PRICES.BTC +
@@ -169,23 +148,19 @@ export function WalletProvider({
     balances.SOL * PRICES.SOL +
     balances.USDT;
 
- 
   const earnPrincipalValue =
     earnPositions.reduce(
       (total, position) =>
         total +
-        position.amount *
-          PRICES[position.coin],
+        position.amount * PRICES[position.coin],
       0
     );
 
-  
   const earnRewardValue =
     earnPositions.reduce(
       (total, position) =>
         total +
-        position.earned *
-          PRICES[position.coin],
+        position.earned * PRICES[position.coin],
       0
     );
 
@@ -193,16 +168,8 @@ export function WalletProvider({
     liquidValue +
     earnPrincipalValue +
     earnRewardValue;
- 
 
-  const totalEarned =
-    earnPositions.reduce(
-      (total, position) =>
-        total +
-        position.earned *
-          PRICES[position.coin],
-      0
-    );
+  const totalEarned = earnRewardValue;
 
   return (
     <WalletContext.Provider
@@ -221,8 +188,7 @@ export function WalletProvider({
 }
 
 export function useWallet() {
-  const context =
-    useContext(WalletContext);
+  const context = useContext(WalletContext);
 
   if (!context) {
     throw new Error(
