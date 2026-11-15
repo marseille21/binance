@@ -14,7 +14,7 @@ import bnbLogo from "../assets/OIP (45).jpg";
 
 import chaseLogo from "../assets/t_500x300 (3).jpg";
 import AmericaLogo from "../assets/t_500x300 (4).jpg";
-import wellsFargoLogo from "../assets/OIP.jpg";
+import wellsFargoLogo from "../assets/OIP (47).jpg";
 
 import type { Transaction } from "../pages/Trade";
 
